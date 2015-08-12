@@ -24,7 +24,8 @@
       <script>
 
           var d = document;
-          var baseUrl = 'http://217.148.217.170:14151/';
+          var baseUrl = 'http://192.168.1.4:14151/';
+          //var baseUrl = 'http://217.148.217.170:14151/';
           var loginUrl = baseUrl + 'Login';
           var geoLocationUrl = baseUrl + 'GetLocation';
           var setSecurityUrl = baseUrl + 'SaveSecurity';
@@ -80,12 +81,18 @@
               
               var request = generateLoginRequest();
 
-              //отправляем запрос
-              var response = loginFromServer(request).response;
-              if (response == true) {
-                  $('#loginModel').modal('hide');
+              if (login == "" || password == "" ||
+                  serverAddress == "" || port == "" ||
+                  serialNo == "") {
+                  alert("Не все поля заполнены");
               } else {
-                  alert('Не верно введены данные');
+                  //отправляем запрос
+                  var response = loginFromServer(request).response;
+                  if (response == true) {
+                      $('#loginModel').modal('hide');
+                  } else {
+                      alert('Не верно введены данные');
+                  }
               }
           }
 
@@ -216,7 +223,12 @@
 
           function init2() {
               
-              if (localStorage.getItem(serverAddressKey) == null) {
+              if (localStorage.getItem(serverAddressKey) == null || localStorage.getItem(serverAddressKey) == "" ||
+                  localStorage.getItem(portKey) == null || localStorage.getItem(portKey) == "" ||
+                  localStorage.getItem(loginKey) == null || localStorage.getItem(loginKey) == "" ||
+                  localStorage.getItem(passwordKey) == null || localStorage.getItem(passwordKey) == "" ||
+                  localStorage.getItem(serialNoKey) == null || localStorage.getItem(serialNoKey) == "") {
+
                   $('#loginModel').modal();
               } else {
                   
@@ -224,7 +236,12 @@
                   if (res == true) {
 
                       d.getElementById('idSecurity').innerText = "Снять с охраны";
-                  }                  
+                  }
+                  if (res != undefined) {
+                      d.getElementById('idGetLocationBtn').disabled = false;
+                      d.getElementById('idSecurity').disabled = false;
+                      d.getElementById('idSettingsBtn').disabled = false;
+                  }
               }
           }
 
@@ -318,8 +335,12 @@
                   if (authorizationToken) {
                       xmlhttp.setRequestHeader("ScoutAuthorization", authorizationToken);
                   }
-                  //отправляем
-                  xmlhttp.send(sendData);
+                  try {
+                      //отправляем
+                      xmlhttp.send(sendData);
+                  } catch (e) {
+                      alert("Сервис не доступен");
+                  }
 
                   //возвращаем статус и тело ответа
                   var responseText = xmlhttp.responseText;
@@ -424,14 +445,14 @@
              
             <div class="btn-group btn-group-justified" role="group" aria-label="...">
                 <div class="btn-group" role="group">
-                    <button type="button" onclick="getLocation()" class="btn btn-default">Машина</button>
+                    <button type="button" id="idGetLocationBtn" onclick="getLocation()" disabled="true" class="btn btn-default">Машина</button>
                 </div>
              
                 <div class="btn-group" role="group">
-                    <button type="button" id="idSecurity" onclick="setSecurity()" class="btn btn-default">Охрана</button>
+                    <button type="button" id="idSecurity" onclick="setSecurity()" disabled="true" class="btn btn-default">Охрана</button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default" data-toggle="modal" onclick="showSettings()">Настройки</button>
+                    <button type="button" class="btn btn-default" id="idSettingsBtn" data-toggle="modal" disabled="true" onclick="showSettings()">Настройки</button>
                 </div>                          
                                 
             </div>
