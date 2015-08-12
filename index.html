@@ -90,6 +90,9 @@
                   var response = loginFromServer(request).response;
                   if (response == true) {
                       $('#loginModel').modal('hide');
+                      d.getElementById('idGetLocationBtn').disabled = false;
+                      d.getElementById('idSecurity').disabled = false;
+                      d.getElementById('idSettingsBtn').disabled = false;
                   } else {
                       alert('Не верно введены данные');
                   }
